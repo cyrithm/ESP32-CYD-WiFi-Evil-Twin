@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wi-Fi Login | Cyrithm Coworking Space</title>
+  <link rel="icon" type="image/png" href="./cyrithm.png">
+  <link rel="apple-touch-icon" href="./cyrithm.png">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <main class="portal">
+
+    <section class="intro">
+      <img class="logo" src="./cyrithm.png" alt="Cyrithm Coworking Space">
+      <h1>Welcome to Cyrithm</h1>
+      <p class="lead">Sign in to get online. Your session stays active while you're in the space.</p>
+      <ul class="perks">
+        <li>High-speed fiber Wi-Fi on every floor</li>
+        <li>Secure network, separate from the office LAN</li>
+        <li>Need help? Ask at the front desk</li>
+      </ul>
+    </section>
+
+    <section class="card" aria-labelledby="login-title">
+      <h2 id="login-title">Connect to Wi-Fi</h2>
+
+      <form id="login-form" action="/login" method="post" novalidate>
+        <input type="hidden" name="redirect_url" value="">
+
+        <div class="tabs" role="radiogroup" aria-label="Sign-in type">
+          <input type="radio" id="tab-guest" name="mode" value="guest" checked>
+          <label for="tab-guest">Guest</label>
+          <input type="radio" id="tab-member" name="mode" value="member">
+          <label for="tab-member">Member</label>
+        </div>
+
+        <div class="panel panel-guest">
+          <div class="field">
+            <label for="name">Full name</label>
+            <input id="name" name="name" type="text" autocomplete="name" placeholder="Jane Doe">
+          </div>
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" autocomplete="email" placeholder="jane@example.com">
+          </div>
+        </div>
+
+        <div class="panel panel-member">
+          <div class="field">
+            <label for="username">Member ID or email</label>
+            <input id="username" name="username" type="text" autocomplete="username" placeholder="Your member ID">
+          </div>
+          <div class="field">
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Password">
+          </div>
+        </div>
+
+        <label class="check">
+          <input type="checkbox" id="terms" name="terms" required>
+          <span>I agree to the <a href="#terms-text">Wi-Fi terms of use</a>.</span>
+        </label>
+
+        <p class="error" id="error" role="alert" hidden></p>
+
+        <button class="btn" type="submit" id="submit">Connect</button>
+      </form>
+
+      <details class="terms" id="terms-text">
+        <summary>Wi-Fi terms of use</summary>
+        <p>This network is for lawful use by Cyrithm guests and members. Don't attempt to disrupt the network or access other people's devices. Activity may be logged as required by law. Cyrithm is not responsible for data sent over the network, so avoid sharing sensitive information on unsecured sites.</p>
+      </details>
+    </section>
+
+  </main>
+
+  <footer class="foot">&copy; <span id="year">2026</span> Cyrithm Coworking Space</footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    var form = document.getElementById('login-form');
+    var err = document.getElementById('error');
+    var btn = document.getElementById('submit');
+
+
+    var params = new URLSearchParams(location.search);
+    form.elements['redirect_url'].value = params.get('url') || params.get('redirect') || '';
+
+    form.addEventListener('submit', function (e) {
+      var guest = form.elements['mode'].value === 'guest';
+      var msg = '';
+
+      if (guest) {
+        if (!form.elements['name'].value.trim()) msg = 'Enter your full name.';
+        else if (!/^\S+@\S+\.\S+$/.test(form.elements['email'].value)) msg = 'Enter a valid email address.';
+      } else {
+        if (!form.elements['username'].value.trim() || !form.elements['password'].value) msg = 'Enter your member ID and password.';
+      }
+      if (!msg && !form.elements['terms'].checked) msg = 'Please accept the terms of use to continue.';
+
+      if (msg) {
+        e.preventDefault();
+        err.textContent = msg;
+        err.hidden = false;
+        return;
+      }
+      err.hidden = true;
+      btn.disabled = true;
+      btn.textContent = 'Connecting…';
+    });
+  </script>
+</body>
+</html>
